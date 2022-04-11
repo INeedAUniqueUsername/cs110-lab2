@@ -10,8 +10,9 @@
   <body>
 
     <h1>Tic Tac Toe</h1>
-    <h2>Its your turn, <span class="display_player"></span>.</h2>
-
+    <h2 id="scoreboard"></h2>
+    <h2 id="announcer">Its your turn, <span id="currentPlayer"></span>.</h2>
+    <h2 id="ai"></h2>
     <div id="board">
       <div class='row'>
         <div><span></span></div>
@@ -30,8 +31,9 @@
       </div>
     </div>
 
-    <button id="newGame">NewGame</button>
+    <button id="newGame">New Game</button>
     <button id="reset">Reset</button>
+    <button id="vs">Play vs Computer</button>
   </body>
 
 
