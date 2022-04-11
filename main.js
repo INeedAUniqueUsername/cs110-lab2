@@ -13,8 +13,8 @@ window.addEventListener('load', () => {
         playing = true;
         winner = null;
         tiles.forEach((t, i) => {
-            t.innerHTML = ' ';
-            t.parentElement.style.backgroundColor = 'pink';
+            t.innerHTML = '';
+            t.parentElement.style.backgroundColor = '';
         });
     }
 
@@ -30,9 +30,9 @@ window.addEventListener('load', () => {
             }
             return;
         }
-        if (tile.innerHTML == ' ') {
+        if (tile.innerHTML === '') {
             tile.innerHTML = ['X', 'O'][playerIndex];
-            tile.parentElement.style.backgroundColor = 'gold';
+            tile.parentElement.style.backgroundColor = 'orange';
             playerMoved(n)
         } else {
             alert(`That space was taken on turn ${allMoves.indexOf(n)}`)
@@ -52,6 +52,8 @@ window.addEventListener('load', () => {
             winner = playerIndex + 1;
             playing = false;
         } else if(allMoves.length == 9) {
+
+            tiles.forEach(t => t.parentElement.style.backgroundColor = 'lightgray');
             alert(`It's a tie`)
             playing = false
         }
