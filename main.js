@@ -116,16 +116,103 @@ window.addEventListener('load', () => {
 
     }
 
+    function possibleMove(player){
+        let score=-2;
+        let moveIndex=-1;
+        for(let i=0, s=-2; i < 9; i++)
+        {
+            if(!allMoves.includes(i))
+            {  s=moveQuality(player, i);
+               if(s > score){}
+                {
+                    score=s;
+                    moveIndex=i;
+                }
+            }
+        }
+        return i;
+    }
     
 
-    function checkOneAway() {
-        //012 345 678: 
-        //036 157 268: check if contains 2 even numbers with the same %3
-        //048 246: check if contains 2 even numbers wiht the same %4
+    //check if one away from winning
+    function checkOneAway(player, checkModes) {
+        //win conditions
+        //condition 1: 012 345 678: //u_u; don't really know the pattern here
+        //condition 2: 036 157 268: check if contains 2 even numbers with the same %3
+        //condition 3: 048 246: check if contains 2 even numbers wiht the same %4 OR even less then 8 (eww)
+            
+        for(let i=0; i < 9; i+=3)
+        {   //these checks are based on rows
+            //condition 1 - for every row check, first 2 columns, check if another element exists in the row (double counting) D:
+            if(i%3==0 && (checkMoves.includes(i+1, i+2)))
+                return true;
+            if(i%3==1 && (checkMoves.includes(i-1, i+1)))
+                return true;
+
+            //condtion 2- check colums - 0, 1, 2, and look for either elements in the colm
+            if(i<3 && (checkMoves.includes(i+3, i+6)))
+                return true;
+            
+            //condition 3-diagonal
+            if(i%2==0 && i%3==0 && (checkMoves.includes(i+4,i+8) || checkMoves.includes(i-2,i-4)))
+                return true;
+        }
+        return false;
+    }
+
+    //crude score
+    //return scores, 1 the move will win the game
+    // 0 if no effect - this needs more refinement
+    //-1 if the move will allow the other user to win the game
+    function moveQuality(player, move){
+        //to many variables D':
+        let myMoves;
+        let opponentMoves;
+        let tempAllMoves=allMoves;
+        let tempMyMoves;
+        let tempOpponentMoves;
+        if(player==0)
+        {   myMoves=xMoves;
+            tempMyMoves=[];
+            opponentMoves=oMoves;
+            tempOpponentMoves=oMoves;
+        }
+        else{
+            myMoves=oMoves;
+            tempMyMoves=oMoves;
+            opponentMoves=xMoves;
+            tempOpponentMoves=xMoves;
+        }
         
-        
-        
-        
+        tempMoves.push(move);
+
+        if(checkOneAway(player, tempMoves))
+        {
+            return 1;
+        }
+        else{
+                //either 0, -1
+
+            for(let i=0; i < 9; ++i){
+                if(!tempAllMoves.includes(i)){
+                    //tempMyMoves.push(i);
+                    tempAllMoves.push(i);
+                }
+                //opponents moves
+                for(let i=0; i < 9; ++i){//double for loop: don't judge me
+                    if(!tempAllMoves.includes(i)){
+                        if(checkOneAway((player+1)%2,), tempOpponentMoves)
+                            return -1; //other player wins
+                    }
+                    
+                }
+                //tempMyMoves=myMoves;
+                tempAllMoves=allMoves;
+                tempOpponentMoves=opponentMoves;
+            }
+            return 0;// no effect
+        }
+
     }
 
     function AI(){
@@ -142,11 +229,6 @@ window.addEventListener('load', () => {
         // put X in spot with
         //
 
-
-        //better AI if there is time
-        //Min-Man
-        //evaluation heuristice - to give a value to avaiable tiles and which is the best move
-        //alpha beta pruning (to optimize)
         
         id('ai').innerHTML = `${names[playerIndex]} is thinking...`;
         let time = 10;
@@ -159,11 +241,10 @@ window.addEventListener('load', () => {
                 setTimeout(think, 50);
             } else {
                 id('ai').innerHTML = '';
-
-                
                 var n = [4, 1, 3, 5, 7, 0, 2, 6, 8].find(i => tiles[i].innerHTML == '');
                 if(n !== undefined) {
                     tileClick(tiles[n], n);
+                    //haven't tested it  - possibleMove(playerIndex); - wip
                 }           
                 
                 thinking = false              
