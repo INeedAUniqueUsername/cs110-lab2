@@ -118,24 +118,25 @@ window.addEventListener('load', () => {
 
     function possibleMove(player){
         let score=-2;
-        let moveIndex=-1;
-        for(let i=0, s=-2; i < 9; i++)
+        let moveIndex=-10;
+        for(let i=0; i < 9; i++)
         {
             if(!allMoves.includes(i))
-            {  s=moveQuality(player, i);
-               if(s > score){}
+            {  
+              let s=moveQuality(player, i);
+               if(s >= score)
                 {
                     score=s;
                     moveIndex=i;
                 }
             }
         }
-        return i;
+        return moveIndex;
     }
     
 
     //check if one away from winning
-    function checkOneAway(player, checkModes) {
+    function checkOneAway(checkModes) {
         //win conditions
         //condition 1: 012 345 678: //u_u; don't really know the pattern here
         //condition 2: 036 157 268: check if contains 2 even numbers with the same %3
@@ -144,17 +145,17 @@ window.addEventListener('load', () => {
         for(let i=0; i < 9; i+=3)
         {   //these checks are based on rows
             //condition 1 - for every row check, first 2 columns, check if another element exists in the row (double counting) D:
-            if(i%3==0 && (checkMoves.includes(i+1, i+2)))
+            if(i%3==0 && (checkModes.includes(i+1, i+2)))
                 return true;
-            if(i%3==1 && (checkMoves.includes(i-1, i+1)))
+            if(i%3==1 && (checkModes.includes(i-1, i+1)))
                 return true;
 
             //condtion 2- check colums - 0, 1, 2, and look for either elements in the colm
-            if(i<3 && (checkMoves.includes(i+3, i+6)))
+            if(i<3 && (checkModes.includes(i+3, i+6)))
                 return true;
             
             //condition 3-diagonal
-            if(i%2==0 && i%3==0 && (checkMoves.includes(i+4,i+8) || checkMoves.includes(i-2,i-4)))
+            if(i%2==0 && i%3==0 && (checkModes.includes(i+4,i+8) || checkModes.includes(i-2,i-4)))
                 return true;
         }
         return false;
@@ -171,46 +172,46 @@ window.addEventListener('load', () => {
         let tempAllMoves=allMoves;
         let tempMyMoves;
         let tempOpponentMoves;
+        let mQuality=-1;
         if(player==0)
         {   myMoves=xMoves;
-            tempMyMoves=[];
+            tempMyMoves=myMoves;
             opponentMoves=oMoves;
             tempOpponentMoves=oMoves;
         }
         else{
-            myMoves=oMoves;
+            //myMoves=oMoves;
             tempMyMoves=oMoves;
             opponentMoves=xMoves;
             tempOpponentMoves=xMoves;
         }
-        
-        tempMoves.push(move);
-
-        if(checkOneAway(player, tempMoves))
-        {
-            return 1;
-        }
-        else{
-                //either 0, -1
-
+    
             for(let i=0; i < 9; ++i){
-                if(!tempAllMoves.includes(i)){
-                    //tempMyMoves.push(i);
                     tempAllMoves.push(i);
-                }
-                //opponents moves
-                for(let i=0; i < 9; ++i){//double for loop: don't judge me
-                    if(!tempAllMoves.includes(i)){
-                        if(checkOneAway((player+1)%2,), tempOpponentMoves)
-                            return -1; //other player wins
+
+                    if(checkOneAway(tempMyMoves))
+                    {
+                        return 1;
                     }
-                    
-                }
-                //tempMyMoves=myMoves;
-                tempAllMoves=allMoves;
-                tempOpponentMoves=opponentMoves;
-            }
-            return 0;// no effect
+                    else{
+                        //opponents moves
+                        for(let i=0; i < 9; ++i){//double for loop: don't judge me
+                            if(!tempAllMoves.includes(i)){
+                                if(checkOneAway(tempOpponentMoves))
+                                    if(mQuality<=-1)
+                                        mQuality = -1; //other player wins
+                                else
+                                    mQuality=0;
+                            }
+                            
+                        
+                        //tempMyMoves=myMoves;
+                        tempAllMoves=allMoves;
+                        tempOpponentMoves=opponentMoves;
+                        }
+
+        }
+            return mQuality;// no effect
         }
 
     }
@@ -242,10 +243,14 @@ window.addEventListener('load', () => {
             } else {
                 id('ai').innerHTML = '';
                 var n = [4, 1, 3, 5, 7, 0, 2, 6, 8].find(i => tiles[i].innerHTML == '');
-                if(n !== undefined) {
-                    tileClick(tiles[n], n);
-                    //haven't tested it  - possibleMove(playerIndex); - wip
-                }           
+                //haven't tested it  -possibleMove(playerIndex); - wip
+
+                let moves=possibleMove(1);
+                //if(n !== undefined) {
+                    //tileClick(tiles[n], n);
+                    tileClick(tiles[moves], moves);
+
+                //}           
                 
                 thinking = false              
             }
